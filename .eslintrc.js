@@ -14,5 +14,10 @@ module.exports = {
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'max-len': ["error", { "code": 200 }],
+    '@typescript-eslint/explicit-module-boundary-types': 0,
+    'import/prefer-default-export': 0,
+    'no-param-reassign': 0,
+    '@typescript-eslint/ban-ts-comment': 0
   },
 };
