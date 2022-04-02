@@ -159,6 +159,8 @@ const mousemoveFn = (e: MouseEvent) => {
   // audioCurrentTime.value = formatMusicTime(audio.value?.currentTime!)
 }
 
+// 记录点击未弹起时的位置
+let getIntoPosition: number;
 // 鼠标在progress点击时触发事件
 const progressMousedown = (e: MouseEvent) => {
   // 此时移除 audio 上的 timeupdate 事件监听
@@ -167,6 +169,8 @@ const progressMousedown = (e: MouseEvent) => {
   progressWidth.value = progress.value?.getBoundingClientRect().width
   // 获取progress最左侧距离浏览器窗口左边的位置
   progressLeft.value = progress.value?.getBoundingClientRect().left
+  // 获取点击未弹起时的位置
+  getIntoPosition = e.offsetX
   window.addEventListener('mousemove', mousemoveFn)
   window.addEventListener('mouseup', mouseUpFn);
 }
@@ -176,8 +180,11 @@ const mouseUpFn = (e: MouseEvent) => {
   isProgressItemTransition.value = true;
   // 移除鼠标滑动时的事件监听
   window.removeEventListener('mousemove', mousemoveFn)
-  // 重置当前歌曲的播放位置(这里e.offsetX是点击时的位置)
-  audio.value!.currentTime = e.offsetX / progressWidth.value * audio.value?.duration!
+  // 根据点击未弹起时的位置和放开时的位置作比较，判断是否有触发move，如果没有移动则是点击事件
+  // 在此重置当前歌曲的播放位置(这里e.offsetX是弹起时的位置)
+  if (getIntoPosition === e.offsetX) {
+    audio.value!.currentTime = e.offsetX / progressWidth.value * audio.value?.duration!
+  }
   // 重新开启 audio 上的 timeupdate 事件监听
   audio.value?.addEventListener('timeupdate', timeupdateFn)
   // 在滑动结束时判断是否开启歌曲
@@ -293,6 +300,7 @@ export default { name: '' };
         width: 100px;
         height: 100px;
         cursor: pointer;
+        user-select: none;
 
         &:hover .player-left-icon i {
           opacity: 1;
@@ -348,6 +356,7 @@ export default { name: '' };
           display: flex;
           align-items: center;
           height: 18px;
+          user-select: none;
           .progress {
             flex: 1;
             display: flex;
