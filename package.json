@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@kohapi/generator": "^0.0.1-alpha.11",
+    "@vueuse/core": "^8.2.3",
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "element-plus": "^2.1.4",
