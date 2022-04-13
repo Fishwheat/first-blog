@@ -5,7 +5,20 @@
     </div>
     <div class="home-content-center">
       <div class="aside">
-        <aside>aside</aside>
+        <!-- <aside> -->
+          <div style="height: 100px; margin-bottom: 20px">
+            <BlogPanel>未开发</BlogPanel>
+          </div>
+          <div style="height: 300px; margin-bottom: 20px">
+            <BlogPanel>未开发</BlogPanel>
+          </div>
+          <div style="height: 300px; margin-bottom: 20px">
+            <BlogPanel>未开发</BlogPanel>
+          </div>
+          <div style="height: 300px; margin-bottom: 20px">
+            <BlogPanel>未开发</BlogPanel>
+          </div>
+        <!-- </aside> -->
       </div>
       <div class="learning-records">
         <BlogLists :toTalLists="toTalList" />
@@ -19,6 +32,7 @@ import '@/assets/svg/home-svg/fonticon/iconfont.css';
 import { reactive, ref, onMounted, onUnmounted, computed, onUpdated, watch } from 'vue';
 import BlogLists from '@/components/blog-lists/index.vue';
 import BlogPlayer from '@/components/blog-player/index.vue';
+import BlogPanel from '@/components/blog-panel/index.vue';
 
 // 引入音乐
 const unstoppableMusic  = require('@/assets/audio/Sia-Unstoppable.mp3?raw');
@@ -484,9 +498,13 @@ export default { name: '' };
     width: 82%;
     display: flex;
     justify-content: space-between;
-
+    .aside {
+      width: 30%;
+      margin-right: 20px;
+    }
     .learning-records {
-      width: 70%;
+      flex: 1;
+      // width: 70%;
     }
   }
 }
