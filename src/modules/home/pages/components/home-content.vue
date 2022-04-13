@@ -1,63 +1,7 @@
 <template>
   <div class="home-content">
     <div class="home-music">
-      <div class="player">
-        <div class="player-body">
-          <!-- <audio ref="audio" :src="audioList[focusIndex].audioSrc"></audio> -->
-          <div class="player-left" @click="playerLeftClick">
-            <img :src="audioList[focusIndex].imgSrc" alt="">
-            <div class="player-left-icon" :class="{'player-left-icon-is_play':isPlay}">
-              <i class="iconfont" :class="isPlay ? 'icon-zanting2':'icon-bofang'"></i>
-            </div>
-          </div>
-          <div class="player-right">
-            <div class="title">{{ audioList[focusIndex].title }}<span> - {{ audioList[focusIndex].author }}</span></div>
-            <div class="lrc"></div>
-            <div class="controller">
-              <div class="progress" @mousedown="progressMousedown" ref="progress">
-                <div class="progress-item" :class="{'progress-item-transition':isProgressItemTransition}" :style="`--progressBuffered:${progressBuffered}%`">
-                  <div class="progress-item-dot" :class="{'progress-item-dot-transition':isProgressItemTransition}">
-                    <span :style="`--dotBuffered:${progressBuffered}`"></span>
-                  </div>
-                </div>
-              </div>
-              <div class="time">
-                <span>{{ audioCurrentTime }} {{ '/' }} {{ audioDuration }}</span>
-                <div class="volume">
-                  <i class="iconfont" @click="volumeIconClick" :class="isVolume ? 'icon-24gf-volumeDisable' : 'icon-24gf-volumeMiddle'"></i>
-                  <div class="volume-wrap" :class="{'volume-wrap-height': isVolumeWrapHeightClass}">
-                    <div class="volume-wrap-bar" @mousedown="volumeMousedown" ref="volume">
-                      <div class="volume-wrap-bar-inner" :style="`height: ${volumeBarHeight}%;`"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="play-type" @click="playTypeClick">
-                  <i class="iconfont" :class="playTypeIcon[playType]"></i>
-                </div>
-                <div class="reset" @click="resetClick">
-                  <i class="iconfont icon-zhongzhi2"></i>
-                </div>
-                <div class="play-lists" @click="isShowPlayerList = !isShowPlayerList">
-                  <i class="iconfont icon-gedan"></i>
-                </div>
-              </div>
-            </div>
-            <div class="right-top-icon" :class="{'right-top-icon-rotate': isPlay}" :style="`--dotBuffered:${progressBuffered}`">
-              <i class="iconfont icon-yinlegedanyinfu"></i>
-            </div>
-          </div>
-        </div>
-        <div class="player-list" :class="{'player-list-show': isShowPlayerList}">
-          <ol>
-            <li v-for="(item, index) in audioList" :key="index" @click="liClick(index)" :class="{'li-focus': focusIndex === index}">
-              <span class="list-cur"></span>
-              <span class="list-index">{{ index + 1 }}</span>
-              <span class="list-title">{{ item.title }}</span>
-              <span class="list-author">{{ item.author }}</span>
-            </li>
-          </ol>
-        </div>
-      </div>
+      <BlogPlayer :audioList="audioList" />
     </div>
     <div class="home-content-center">
       <div class="aside">
@@ -74,8 +18,7 @@
 import '@/assets/svg/home-svg/fonticon/iconfont.css';
 import { reactive, ref, onMounted, onUnmounted, computed, onUpdated, watch } from 'vue';
 import BlogLists from '@/components/blog-lists/index.vue';
-import { storage } from '@/helpers/storage';
-import { useRoute } from 'vue-router';
+import BlogPlayer from '@/components/blog-player/index.vue';
 
 // 引入音乐
 const unstoppableMusic  = require('@/assets/audio/Sia-Unstoppable.mp3?raw');
@@ -106,108 +49,396 @@ const audioList = computed(() => {
     'author': 'Sia',
     'imgSrc': siaImg,
     'lrc': [
-      { '00:00': '作曲 : Mia Minichiello/Matias Mora'},
-      { '00:08': "You're so unfair to yourself"},
-      { '00:16': 'Got that feeling in your chest'},
-      { '00:24': "Can't look in the mirror"},
-      { '00:28': "Can't see who you are"},
-      { '00:32': 'Wanna be somebody else'},
-      { '00:40': 'Every time you falter'},
-      { '00:44': 'Every time you fall'},
-      { '00:48': 'I can still see the road ahead'},
-      { '00:55': "You'll be brighter than the stars"},
-      { '00:59': "And you'll see how radiant you are"},
-      { '01:03': "I know you're full of doubt" },
-      { '01:05': "Don't let them bring you down" },
-      { '01:06': "Cause you're unstoppable" },
-      { '01:11': 'Rising higher than the sun' },
-      { '01:15': "Climb away until they're gone" },
-      { '01:19': 'Way up above the clouds' },
-      { '01:21': "They'll never bring you down" },
-      { '01:22': "Cause you're unstoppable" },
-      { '01:28': 'On the edge of given in' },
-      { '01:35': "Growing tired of way you've' been" },
-      { '01:43': "Don't quit keep on hoping" },
-      { '01:47': 'Hold your head of high' },
-      { '01:51': 'Now you closer than you think' },
-      { '01:59': 'Every time you falter' },
-      { '02:03': 'Every time you fall' },
-      { '02:07': 'I can still see the road you ahead' },
-      { '02:14': "You'll be brighter than the stars" },
-      { '02:18': "And you'll see how radiant you are" },
-      { '02:22': "I know you're full of doubt" },
-      { '02:25': "Don't let them bring you down" },
-      { '02:26': "Cause you're unstoppable" },
-      { '02:30': "Rising higher than the sun" },
-      { '02:34': "Climb away until they're gone" },
-      { '02:38': "Way up above the clouds" },
-      { '02:40': "They'll never bring you down" },
-      { '02:42': "Cause you're unstoppable" },
-      { '02:47': "Hold on,don't let go" },
-      { '02:51': "Shining brighter,you're unstoppable" },
-      { '02:54': "Hold on,don't let go" },
-      { '02:58': "Even in the dark you glow" },
-      { '03:02': "Hold on,don't let go" },
-      { '03:06': "Shining brighter,you're unstoppable" },
-      { '03:10': "Hold on,don't let go" },
-      { '03:14': "Even in the dark you glow" },
-      { '03:18': "You'll be brighter than the stars" },
-      { '03:21': "And you'll see how radiant you are" },
-      { '03:25': "I know you're full of doubt" },
-      { '03:27': "Don't let them bring you down" },
-      { '03:29': "Cause you're unstoppable" },
-      { '03:33': "Rising higher than the sun" },
-      { '03:37': "Climb away until they're gone" },
-      { '03:41': "Way up above the clouds" },
-      { '03:43': "They'll never bring you down" },
-      { '03:45': "Cause you're unstoppable" },
-      { '03:51': "Unstoppable" },
-      { '03:55': "Unstoppable" },
-      { '04:00': "Yeah you are" },
-      { '04:04': "Unstoppable" },
-    ]
+        { 'time': '00:00', 'text': "作词 : Sia/Christopher Braide" },
+        { 'time': '00:01', 'text': "作曲 : Sia/Christopher Braide" },
+        { 'time': '00:02', 'text': "编曲 : Jesse Shatkin" },
+        { 'time': '00:11', 'text': "I'll smile I know what it takes to fool this town" },
+        { 'time': '00:15', 'text': "I'll do it 'til the sun goes down and all through the night time" },
+        { 'time': '00:21', 'text': "Oh yeah oh yeah I'll tell you what you wanna hear" },
+        { 'time': '00:26', 'text': "keep my sunglasses on while I shed a tear" },
+        { 'time': '00:29', 'text': "It's never the right time yeah" },
+        { 'time': '00:33', 'text': "I put my armor on show you how strong I am" },
+        { 'time': '00:39', 'text': "I put my armor on I'll show you that I am" },
+        { 'time': '00:45', 'text': "I'm unstoppable" },
+        { 'time': '00:47', 'text': "I'm a Porsche with no brakes" },
+        { 'time': '00:50', 'text': "I'm invincible" },
+        { 'time': '00:53', 'text': "Yeah I win every single game" },
+        { 'time': '00:55', 'text': "I'm so powerful" },
+        { 'time': '00:58', 'text': "I don't need batteries to play" },
+        { 'time': '01:01', 'text': "I'm so confident I'm unstoppable today" },
+        { 'time': '01:07', 'text': "Unstoppable today I'm unstoppable today" },
+        { 'time': '01:13', 'text': "Unstoppable today I'm unstoppable today" },
+        { 'time': '01:17', 'text': "I break down only alone I will cry out loud" },
+        { 'time': '01:21', 'text': "You'll never see you're hiding out now" },
+        { 'time': '01:24', 'text': "Hiding out deep down yeah yeah" },
+        { 'time': '01:28', 'text': "I know I've heard that to let your feelings show" },
+        { 'time': '01:32', 'text': "Is the only way to make friendships grow" },
+        { 'time': '01:35', 'text': "But I'm too afraid now yeah yeah" },
+        { 'time': '01:40', 'text': "I put my armor on show you how strong I am" },
+        { 'time': '01:45', 'text': "I put my armor on I'll show you that I am" },
+        { 'time': '01:51', 'text': "I'm unstoppable" },
+        { 'time': '01:53', 'text': "I'm a Porsche with no brakes" },
+        { 'time': '01:56', 'text': "I'm invincible" },
+        { 'time': '01:59', 'text': "Yeah I win every single game" },
+        { 'time': '02:02', 'text': "I'm so powerful" },
+        { 'time': '02:04', 'text': "I don't need batteries to play" },
+        { 'time': '02:07', 'text': "I'm so confident I'm unstoppable today" },
+        { 'time': '02:13', 'text': "Unstoppable today unstoppable today" },
+        { 'time': '02:19', 'text': "Unstoppable today I'm unstoppable today" },
+        { 'time': '02:24', 'text': "Unstoppable today  unstoppable today" },
+        { 'time': '02:30', 'text': "Unstoppable today I'm unstoppable today" },
+        { 'time': '02:35', 'text': "I put my armor on show you how strong I am" },
+        { 'time': '02:40', 'text': "I put my armor on I'll show you that I am" },
+        { 'time': '02:47', 'text': "I'm unstoppable" },
+        { 'time': '02:50', 'text': "I'm a Porsche with no brakes" },
+        { 'time': '02:53', 'text': "I'm invincible" },
+        { 'time': '02:55', 'text': "Yeah I win every single game" },
+        { 'time': '02:59', 'text': "I'm so powerful" },
+        { 'time': '03:01', 'text': "I don't need batteries to play" },
+        { 'time': '03:04', 'text': "I'm so confident I'm unstoppable today" },
+        { 'time': '03:10', 'text': "Unstoppable today unstoppable today" },
+        { 'time': '03:15', 'text': "Unstoppable today I'm unstoppable today" },
+        { 'time': '03:20', 'text': "Unstoppable today unstoppable today" },
+        { 'time': '03:26', 'text': "Unstoppable today I'm unstoppable today" },
+      ]
     },
     {
     'audioSrc': wuMingZhiBeiMusic,
     'title': '无名之辈',
     'author': '陈雪燃',
     'imgSrc': chenXueRanImg,
+    'lrc': [
+        {'time': '00:00', 'text': ' 作词 : 唐汉霄' },
+        {'time': '00:01', 'text': ' 作曲 : 唐汉霄' },
+        {'time': '00:02', 'text': ' 编曲 : 张峰棣' },
+        {'time': '00:06', 'text': '城市黎明的灯火' },
+        {'time': '00:08', 'text': '总有光环在陨落' },
+        {'time': '00:11', 'text': '模仿者一个又一个' },
+        {'time': '00:17', 'text': '无人问津的角色' },
+        {'time': '00:20', 'text': '你选择去崇拜谁呢 怨恨谁呢' },
+        {'time': '00:28', 'text': '假装热情的冷落' },
+        {'time': '00:31', 'text': '假装自由的枷锁' },
+        {'time': '00:34', 'text': '你最后成为了什么' },
+        {'time': '00:39', 'text': '燃烧华丽的烟火' },
+        {'time': '00:42', 'text': '绽放一次就足够了  奢求什么' },
+        {'time': '00:52', 'text': '无名之辈 我是谁' },
+        {'time': '00:55', 'text': '忘了谁 也无所谓' },
+        {'time': '00:58', 'text': '谁不是 拼了命走到生命的结尾' },
+        {'time': '01:03', 'text': '也许很累一身狼狈' },
+        {'time': '01:06', 'text': '也许卑微一生无为' },
+        {'time': '01:09', 'text': '也许永远成为不了 你的光辉' },
+        {'time': '01:15', 'text': '无名之辈 我是谁' },
+        {'time': '01:18', 'text': '忘了谁 也无所谓' },
+        {'time': '01:21', 'text': '继续追  谁的光荣不是伴着眼泪' },
+        {'time': '01:26', 'text': '也许很累一身狼狈' },
+        {'time': '01:29', 'text': '也许卑微一生无为' },
+        {'time': '01:32', 'text': '谁生来不都是一样 尽管叫我无名之辈' },
+        {'time': '01:44', 'text': '假装热情的冷落' },
+        {'time': '01:47', 'text': '假装自由的枷锁' },
+        {'time': '01:50', 'text': '你最后成为了什么' },
+        {'time': '01:56', 'text': '燃烧华丽的烟火' },
+        {'time': '01:58', 'text': '绽放一次就足够了  奢求什么' },
+        {'time': '02:10', 'text': '无名之辈 我是谁' },
+        {'time': '02:13', 'text': '忘了谁 也无所谓' },
+        {'time': '02:16', 'text': '谁不是 拼了命走到生命的结尾' },
+        {'time': '02:21', 'text': '也许很累一身狼狈' },
+        {'time': '02:24', 'text': '也许卑微一生无为' },
+        {'time': '02:27', 'text': '也许永远成为不了 你的光辉 无名之辈' },
+        {'time': '03:01', 'text': '无名之辈 我是谁' },
+        {'time': '03:04', 'text': '忘了谁 也无所谓' },
+        {'time': '03:07', 'text': '谁不是 拼了命走到生命的结尾' },
+        {'time': '03:12', 'text': '也许很累一身狼狈' },
+        {'time': '03:15', 'text': '也许卑微一生无为' },
+        {'time': '03:18', 'text': '也许永远也成为不了谁' },
+        {'time': '03:26', 'text': '无名之辈 我是谁' },
+        {'time': '03:29', 'text': '忘了谁 也无所谓' },
+        {'time': '03:32', 'text': '继续追  谁的光荣不是伴着眼泪' },
+        {'time': '03:37', 'text': '也许很累一身狼狈' },
+        {'time': '03:40', 'text': '也许卑微一生无为' },
+        {'time': '03:43', 'text': '谁生来不都是一样 尽管叫我无名之辈' },
+        {'time': '03:56', 'text': '制作人：陈雪燃' },
+        {'time': '03:57', 'text': '吉他：牛子健' },
+        {'time': '03:58', 'text': '和音：陈雪燃' },
+        {'time': '03:59', 'text': '混音&母带：NEM Studios' },
+        {'time': '04:00', 'text': '音乐出品发行：华策克顿上海剧酷文化传播有限公司、北京听见时代娱乐传媒有限公司' },
+      ],
     },
     {
     'audioSrc': zombieMusic,
     'title': 'Zombie',
     'author': 'Bad Wolves',
     'imgSrc': zombieImg,
+    'lrc': [
+        { 'time': '00:00', 'text': " 作词 : Dolores O'Riordan" },
+        { 'time': '00:01', 'text': " 作曲 : Dolores O'Riordan" },
+        { 'time': '00:16', 'text': "Another head hangs lowly" },
+        { 'time': '00:21', 'text': "Child is slowly taken" },
+        { 'time': '00:29', 'text': "And the violence causes silence" },
+        { 'time': '00:34', 'text': "Who are we mistaken" },
+        { 'time': '00:39', 'text': "But you see it's not me" },
+        { 'time': '00:42', 'text': "It's not my family" },
+        { 'time': '00:45', 'text': "In your head in your head they are fighting" },
+        { 'time': '00:52', 'text': "With their tanks and their bombs" },
+        { 'time': '00:55', 'text': "And their bombs and their drones" },
+        { 'time': '00:58', 'text': "In your head in your head they are crying" },
+        { 'time': '01:07', 'text': "What's in your head in your head" },
+        { 'time': '01:13', 'text': "Zombie zombie zombie-ie-ie" },
+        { 'time': '01:20', 'text': "What's in your head in your head" },
+        { 'time': '01:26', 'text': "Zombie zombie zombie-ie-ie-ie oh" },
+        { 'time': '01:34', 'text': "Another mother's breakin'" },
+        { 'time': '01:39', 'text': "Heart is takin' over" },
+        { 'time': '01:46', 'text': "When the violence causes silence" },
+        { 'time': '01:52', 'text': "We must be mistaken" },
+        { 'time': '01:57', 'text': "It's the same old theme" },
+        { 'time': '02:00', 'text': "In two thousand eighteen" },
+        { 'time': '02:03', 'text': "In your head in your head they're still fightin'" },
+        { 'time': '02:10', 'text': "With their tanks and their bombs" },
+        { 'time': '02:13', 'text': "And their guns and their drones" },
+        { 'time': '02:16', 'text': "In your head in your head they are dyin'" },
+        { 'time': '02:22', 'text': "What's in your head in your head" },
+        { 'time': '02:28', 'text': "Zombie zombie zombie-ie-ie" },
+        { 'time': '02:35', 'text': "What's in your head in your head" },
+        { 'time': '02:41', 'text': "Zombie zombie zombie-ie-ie oh" },
+        { 'time': '03:12', 'text': "It's the same old theme" },
+        { 'time': '03:15', 'text': "In two thousand eight-teen" },
+        { 'time': '03:18', 'text': "In your head in your head they're dyin'" },
+        { 'time': '03:24', 'text': "What's in your head in your head" },
+        { 'time': '03:31', 'text': "Zombie zombie zombie-ie-ie" },
+        { 'time': '03:37', 'text': "What's in your head in your head" },
+        { 'time': '03:43', 'text': "Zombie zombie zombie-ie-ie oh" },
+      ],
     },
     {
     'audioSrc': forNightMusic,
     'title': "Let's Fall in Love for the Night",
     'author': 'Finneas',
     'imgSrc': forNightImg,
+    'lrc': [
+        { 'time': '00:00', 'text': " 作词 : FINNEAS" },
+        { 'time': '00:00', 'text': " 作曲 : FINNEAS" },
+        { 'time': '00:01', 'text': "Let's fall in love for the night" },
+        { 'time': '00:04', 'text': "And forget in the morning" },
+        { 'time': '00:08', 'text': "Play me a song that you like" },
+        { 'time': '00:11', 'text': "You can bet I'll know every line" },
+        { 'time': '00:17', 'text': "I'm the boy that your boy hoped that you would avoid" },
+        { 'time': '00:21', 'text': "Don't waste your eyes on jealous guys, **** that noise" },
+        { 'time': '00:25', 'text': "I know better than to call you mine" },
+        { 'time': '00:33', 'text': "You need a pick me up" },
+        { 'time': '00:37', 'text': "I'll be there in twenty five" },
+        { 'time': '00:40', 'text': "I like to push my luck" },
+        { 'time': '00:44', 'text': "So take my hand, let's take a drive" },
+        { 'time': '00:48', 'text': "I've been living in the future" },
+        { 'time': '00:52', 'text': "Hoping I might see you sooner" },
+        { 'time': '00:56', 'text': "I want you, riding shotgun I knew" },
+        { 'time': '00:59', 'text': "When I got one right" },
+        { 'time': '01:03', 'text': "Let's fall in love for the night" },
+        { 'time': '01:06', 'text': "And forget in the morning" },
+        { 'time': '01:10', 'text': "Play me a song that you like" },
+        { 'time': '01:13', 'text': "You can bet I'll know every line" },
+        { 'time': '01:19', 'text': "I'm the boy that your boy hoped that you would avoid" },
+        { 'time': '01:23', 'text': "Don't waste your eyes on jealous guys, **** that noise" },
+        { 'time': '01:27', 'text': "I know better than to call you mine" },
+        { 'time': '01:34', 'text': "I love it when you talk that nerdy ****" },
+        { 'time': '01:37', 'text': "We're in our twenties talking thirties ****" },
+        { 'time': '01:41', 'text': "We're making money but we're saving it" },
+        { 'time': '01:44', 'text': "'Cause talking **** is cheap and we talk a lot of it" },
+        { 'time': '01:49', 'text': "You won't stay with me, I know" },
+        { 'time': '01:52', 'text': "But you can have your way with me until you go" },
+        { 'time': '01:56', 'text': "And before your kisses turn into bruises, I am a warning" },
+        { 'time': '02:03', 'text': "Let's fall in love for the night" },
+        { 'time': '02:06', 'text': "And forget in the morning" },
+        { 'time': '02:13', 'text': "Play me a song that you like" },
+        { 'time': '02:17', 'text': "You can bet I'll know every line" },
+        { 'time': '02:25', 'text': "Cause I'm the boy that your boy hoped that you would avoid" },
+        { 'time': '02:33', 'text': "Don't waste your eyes on jealous guys, **** that noise" },
+        { 'time': '02:43', 'text': "I know better, I know better" },
+        { 'time': '02:51', 'text': "I know better than to ever call you mine" },
+      ],
     },
     {
     'audioSrc': loneRangerMusic,
     'title': 'Lone Ranger',
     'author': 'Rachel Platten',
     'imgSrc': loneRangerImg,
+    'lrc': [
+        { 'time': '00:00', 'text': " 作词 : Rachel Platten" },
+        { 'time': '00:01', 'text': " 作曲 : Rachel Platten" },
+        { 'time': '00:08', 'text': "Maybe I'm selfish, call me see through" },
+        { 'time': '00:10', 'text': "But I'm debating if I really need to" },
+        { 'time': '00:12', 'text': "Tie down to someone forever" },
+        { 'time': '00:14', 'text': "Sure I get lonely sometimes, I miss being together" },
+        { 'time': '00:16', 'text': "But, hey!, when I roam from city to city" },
+        { 'time': '00:18', 'text': "Let the highway and the crowds, and the hunger that's in me" },
+        { 'time': '00:20', 'text': "Fill me up with fireworks and tell me I'm skinny" },
+        { 'time': '00:22', 'text': "Soak up the fire and the buzz they give me" },
+        { 'time': '00:24', 'text': "Oo oo oo oo oo" },
+        { 'time': '00:28', 'text': "Long nights, stay up late" },
+        { 'time': '00:30', 'text': "Drink the sky, meditate" },
+        { 'time': '00:32', 'text': "Oo oo oo oo oo" },
+        { 'time': '00:36', 'text': "Open eyes, sunroof" },
+        { 'time': '00:38', 'text': "Give me miles  , give me truth" },
+        { 'time': '00:42', 'text': "Sometimes I get high, sometimes I get low" },
+        { 'time': '00:46', 'text': "But I'm calm as can be in a room full of strangers" },
+        { 'time': '00:50', 'text': "But oh my, don't try to get close" },
+        { 'time': '00:54', 'text': "I'm just gonna leave, 'cause baby I'm a lone ranger" },
+        { 'time': '00:59', 'text': "Na na na na na, na na na na na na, na na na na na na" },
+        { 'time': '01:05', 'text': "I'm a lone ranger" },
+        { 'time': '01:07', 'text': "I'm a lion, I'm a tiger" },
+        { 'time': '01:09', 'text': "I'm a caged bird, I'm on fire" },
+        { 'time': '01:11', 'text': "Got these paper wings, but they don't hold the air" },
+        { 'time': '01:13', 'text': "Get so close to somebody but I don't stay there" },
+        { 'time': '01:15', 'text': "Much less brave than I admit" },
+        { 'time': '01:17', 'text': "Much more scared than they all think" },
+        { 'time': '01:20', 'text': "But I'm protecting this organ in my chest" },
+        { 'time': '01:21', 'text': "'Cause the blood sweat and tears they can make quite a mess" },
+        { 'time': '01:24', 'text': "Oo oo oo oo oo" },
+        { 'time': '01:28', 'text': "Open eyes, open roof" },
+        { 'time': '01:30', 'text': "Give me miles, give me truth" },
+        { 'time': '01:33', 'text': "Sometimes I get high, sometimes I get low" },
+        { 'time': '01:38', 'text': "But I'm calm as can be in a room full of strangers" },
+        { 'time': '01:42', 'text': "But oh my, don't try to get close" },
+        { 'time': '01:46', 'text': "I'm just gonna leave, 'cause baby I'm a lone ranger" },
+        { 'time': '01:51', 'text': "Na na na na na, na na na na na na, na na na na na na" },
+        { 'time': '01:56', 'text': "'Cause baby I'm a lone ranger" },
+        { 'time': '01:59', 'text': "I don't wanna get broken baby" },
+        { 'time': '02:01', 'text': "I don't wanna get broken baby" },
+        { 'time': '02:03', 'text': "I don't wanna get broken baby" },
+        { 'time': '02:04', 'text': "Cut open baby, cut open baby" },
+        { 'time': '02:07', 'text': "I don't wanna get broken baby" },
+        { 'time': '02:09', 'text': "I don't wanna get broken baby" },
+        { 'time': '02:11', 'text': "I don't wanna get broken baby" },
+        { 'time': '02:12', 'text': "Cut open baby, cut open baby" },
+        { 'time': '02:24', 'text': "Sometimes I get high, sometimes I get low" },
+        { 'time': '02:29', 'text': "But I'm calm as can be in a room full of strangers" },
+        { 'time': '02:33', 'text': "But oh my, don't try to get close" },
+        { 'time': '02:37', 'text': "I'm just gonna leave, 'cause baby I'm a lone ranger" },
+        { 'time': '02:41', 'text': "Na na na na na, na na na na na na, na na na na na na" },
+        { 'time': '02:49', 'text': "Sometimes I get high" },
+        { 'time': '02:51', 'text': "Na na na na na, na na na na na na, na na na na na na" },
+        { 'time': '02:55', 'text': "'Cause baby I'm a lone ranger" },
+        { 'time': '02:58', 'text': "But oh my, don't try to get close" },
+        { 'time': '03:02', 'text': "I'm just gonna leave, 'cause baby I'm a lone ranger" },
+      ],
     },
     {
     'audioSrc': jinXingMuXingMusic,
     'title': 'Венера-Юпитер',
     'author': 'Ваня Дмитриенко',
     'imgSrc': jinXingMuXingImg,
+    'lrc': [
+        { 'time': '00:00', 'text': "作词 : Артём Шаповалов" },
+        { 'time': '00:00', 'text': "作曲 : Артём Шаповалов" },
+        { 'time': '00:00', 'text': "Ты Венера — я Юпитер" },
+        { 'time': '00:02', 'text': "Ты Москва, я Питер" },
+        { 'time': '00:03', 'text': "Люди, помогите дышать" },
+        { 'time': '00:06', 'text': "Ты Венера — я Юпитер" },
+        { 'time': '00:08', 'text': "Ты Москва, я Питер" },
+        { 'time': '00:10', 'text': "На одной орбите опять" },
+        { 'time': '00:14', 'text': "Ты Венера — я Юпитер" },
+        { 'time': '00:15', 'text': "Ты Москва, я Питер" },
+        { 'time': '00:17', 'text': "Люди, помогите дышать" },
+        { 'time': '00:20', 'text': "Ты Венера — я Юпитер" },
+        { 'time': '00:22', 'text': "Ты Москва, я Питер" },
+        { 'time': '00:24', 'text': "На одной орбите опять" },
+        { 'time': '00:27', 'text': "По пятам друг за другом ходим" },
+        { 'time': '00:31', 'text': "Как ты там, в моём телефоне" },
+        { 'time': '00:34', 'text': "Неспроста, не подобрать пароли" },
+        { 'time': '00:38', 'text': "К твоему сердцу что ли" },
+        { 'time': '00:39', 'text': "Скажу 'Спасибо' городам" },
+        { 'time': '00:41', 'text': "Что не разделили нас" },
+        { 'time': '00:43', 'text': "Зачем мне быть отдельно от тебя" },
+        { 'time': '00:45', 'text': "Ведь, я так не хочу сейчас" },
+        { 'time': '00:47', 'text': "Может эту песню" },
+        { 'time': '00:48', 'text': "Никогда ты не услышишь" },
+        { 'time': '00:50', 'text': "Но я вновь на нашей крыше" },
+        { 'time': '00:52', 'text': "Вспоминаю, как ты дышишь" },
+        { 'time': '00:54', 'text': "(Как же ты дышишь)" },
+        { 'time': '00:54', 'text': "Ты Венера — я Юпитер" },
+        { 'time': '00:56', 'text': "Ты Москва — я Питер" },
+        { 'time': '00:58', 'text': "Люди, помогите дышать" },
+        { 'time': '01:01', 'text': "Ты Венера — я Юпитер" },
+        { 'time': '01:03', 'text': "Ты Москва — я Питер" },
+        { 'time': '01:05', 'text': "На одной орбите опять" },
+        { 'time': '01:08', 'text': "А, может быть, счастья нам не найти, и" },
+        { 'time': '01:12', 'text': "Если честно, ты не моя невеста" },
+        { 'time': '01:15', 'text': "Но так много пути с тобой мы прошли" },
+        { 'time': '01:18', 'text': "Чтобы найти свое место вместе" },
+        { 'time': '01:22', 'text': "Ты Венера — я Юпитер" },
+        { 'time': '01:24', 'text': "Ты Москва — я Питер" },
+        { 'time': '01:26', 'text': "Люди, помогите дышать" },
+        { 'time': '01:29', 'text': "Ты Венера — я Юпитер" },
+        { 'time': '01:31', 'text': "Ты Москва — я Питер" },
+        { 'time': '01:32', 'text': "На одной орбите опять" },
+        { 'time': '01:36', 'text': "Ты Венера — я Юпитер" },
+        { 'time': '01:38', 'text': "Ты Москва — я Питер" },
+        { 'time': '01:39', 'text': "Люди, помогите дышать" },
+        { 'time': '01:42', 'text': "Ты Венера, я Юпитер" },
+        { 'time': '01:44', 'text': "Ты Москва, я Питер" },
+        { 'time': '01:46', 'text': "На одной орбите опять" },
+        { 'time': '01:49', 'text': "Ты Венера — я Юпитер" },
+        { 'time': '01:51', 'text': "Ты Москва — я Питер" },
+        { 'time': '01:53', 'text': "Люди, помогите дышать" },
+        { 'time': '01:56', 'text': "Ты Венера — я Юпитер" },
+        { 'time': '01:58', 'text': "Ты Москва — я Питер" },
+        { 'time': '02:00', 'text': "На одной орбите опять" },
+      ],
     },
     {
     'audioSrc': liXiangMusic,
     'title': '理想',
     'author': '赵雷',
     'imgSrc': liXiangImg,
+    'lrc': [
+        { 'time': '00:00', 'text': ' 作词 : 赵雷' },
+        { 'time': '00:01', 'text': ' 作曲 : 赵雷' },
+        { 'time': '00:35', 'text': '一个人住在这城市' },
+        { 'time': '00:38', 'text': '为了填饱肚子就已精疲力尽' },
+        { 'time': '00:42', 'text': '还谈什么理想' },
+        { 'time': '00:45', 'text': '那是我们的美梦' },
+        { 'time': '00:52', 'text': '梦醒后 还是依然奔波在风雨的街头' },
+        { 'time': '00:59', 'text': '有时候想哭就把泪 咽进一腔热血的胸口' },
+        { 'time': '01:08', 'text': '公车上我睡过了车站' },
+        { 'time': '01:17', 'text': '一路上我望着霓虹的北京' },
+        { 'time': '01:25', 'text': '我的理想把我丢在这个拥挤的人潮' },
+        { 'time': '01:32', 'text': '车窗外已经是一片白雪茫茫' },
+        { 'time': '01:40', 'text': '又一个四季在轮回' },
+        { 'time': '01:44', 'text': '而我一无所获的坐在街头' },
+        { 'time': '01:49', 'text': '只有理想在支撑着那些麻木的血肉' },
+        { 'time': '01:57', 'text': '理想今年你几岁' },
+        { 'time': '02:01', 'text': '你总是诱惑着年轻的朋友' },
+        { 'time': '02:06', 'text': '你总是谢了又开 给我惊喜' },
+        { 'time': '02:10', 'text': '又让我沉入失望的生活里' },
+        { 'time': '02:56', 'text': '公车上我睡过了车站' },
+        { 'time': '03:04', 'text': '一路上我望着霓虹的北京' },
+        { 'time': '03:13', 'text': '我的理想把我丢在这个拥挤的人潮' },
+        { 'time': '03:20', 'text': '车窗外已经是一片白雪茫茫' },
+        { 'time': '03:28', 'text': '又一个四季在轮回' },
+        { 'time': '03:31', 'text': '而我一无所获的坐在街头' },
+        { 'time': '03:36', 'text': '只有理想在支撑着那些麻木的血肉' },
+        { 'time': '03:44', 'text': '理想今年你几岁' },
+        { 'time': '03:49', 'text': '你总是诱惑着年轻的朋友' },
+        { 'time': '03:53', 'text': '你总是谢了又开 给我惊喜' },
+        { 'time': '03:57', 'text': '又让我沉入失望的生活里' },
+        { 'time': '04:01', 'text': '又一个年代在变换' },
+        { 'time': '04:05', 'text': '我已不是无悔的那个青年' },
+        { 'time': '04:10', 'text': '青春被时光抛弃' },
+        { 'time': '04:13', 'text': '已是当父亲的年纪' },
+        { 'time': '04:18', 'text': '理想永远都年轻' },
+        { 'time': '04:22', 'text': '你让我倔强地反抗着命运' },
+        { 'time': '04:27', 'text': '你让我变得苍白' },
+        { 'time': '04:29', 'text': '却依然天真的相信花儿会再次的盛开' },
+        { 'time': '04:48', 'text': '阳光之中 到处可见奔忙的人们' },
+        { 'time': '04:56', 'text': '被拥挤着 被一晃而飞的光阴忽略过' },
+      ],
     },
     {
     'audioSrc': komorebiChunYinYueMusic,
     'title': 'Komorebi (叶隙间洒落的阳光)',
     'author': 'm-taku',
     'imgSrc': komorebiChunYinYueImg,
+    'lrc': [
+        { 'time': '00:00', 'text': '纯音乐，请欣赏' },
+      ],
     }
   ]
 })
@@ -227,329 +458,7 @@ const toTalList = computed(() => {
   }))
 })
 
-// 格式化歌曲时长
-const formatMusicTime = (val: number) => {
-  if (Math.floor(val % 60).toString().length === 1) {
-    return `0${Math.floor(val / 60)}:0${Math.floor(val % 60)}`
-  } else if (Math.floor(val / 60).toString().length === 1) {
-    return `0${Math.floor(val / 60)}:${Math.floor(val % 60)}`
-  } else {
-    return `${Math.floor(val / 60)}:${Math.floor(val % 60)}`
-  }
-}
-
-// 拿到audio标签（歌曲）
-// const audio = ref<HTMLAudioElement>()
-const audio = ref<HTMLAudioElement>(new Audio())
-
-// 定义歌曲的时长
-const audioDuration = ref()
-
-// 播放歌曲fn()
-const play = () => {
-  audio.value?.play()
-}
-
-// 暂停歌曲fn()
-const stop = () => {
-  audio.value?.pause()
-}
-
-// 重置歌曲fn()
-const load = () => {
-  audio.value?.load()
-}
-
-// 定义记录当前歌曲是否播放，控制icon的切换
-const isPlay = ref(false)
-
-// 组件左边模块的点击事件fn()
-const playerLeftClick = () => {
-  isPlay.value = !isPlay.value
-  if (isPlay.value) {
-    play();
-  } else {
-    stop();
-  }
-}
-
-// 获取progress的dom
-const progress = ref<HTMLDivElement>()
-// 获取progress的宽度
-const progressWidth = ref()
-// 当前彩色进度条的length
-const progressBuffered = ref(0)
-// 定义是否开启动画，在滑动时关闭，在点击结束时开启
-const isProgressItemTransition = ref(true)
-// 记录progress最左侧距离浏览器窗口左边的位置
-const progressLeft = ref()
-
-// 已播放时长
-const audioCurrentTime = ref('00:00')
-// 根据播放了的时间与总时长，获取彩色进度条的length
-const timeupdateFn = () => {
-  audioCurrentTime.value = formatMusicTime(audio.value?.currentTime!)
-  // 当在列表中切换歌曲时，切换的瞬间拿不到歌曲的时长，会变成NaN，当拿不到时给0（避免计算出的值为NaN）
-  if (audio.value?.duration) {
-    progressBuffered.value = audio.value?.currentTime! / audio.value?.duration * 100
-  } else {
-    progressBuffered.value = 0
-  }
-}
-
-// 鼠标点击后滑动触发的事件
-const mousemoveFn = (e: MouseEvent) => {
-  // 在滑动过程中暂停歌曲
-  stop()
-  // 关闭进度条的动画效果
-  isProgressItemTransition.value = false;
-  // 点击的位置与总长度的百分比
-  let percent = (e.clientX - progressLeft.value) / progressWidth.value
-  if (percent < 0) {
-    percent = 0
-  } else if (percent > 1) {
-    percent = 1
-  }
-  // 重置当前彩色进度条的length 和 播放位置
-  // progressBuffered.value = percent * 100
-  audio.value!.currentTime = percent * audio.value?.duration!
-  timeupdateFn()
-  // audioCurrentTime.value = formatMusicTime(audio.value?.currentTime!)
-}
-
-// 记录点击未弹起时的位置
-let getIntoPosition: number;
-// 鼠标在progress点击时触发事件
-const progressMousedown = (e: MouseEvent) => {
-  // 此时移除 audio 上的 timeupdate 事件监听
-  audio.value?.removeEventListener('timeupdate', timeupdateFn)
-  // 获取progress的总长度（在这里获取可保证获取到正确的长度）
-  progressWidth.value = progress.value?.getBoundingClientRect().width
-  // 获取progress最左侧距离浏览器窗口左边的位置
-  progressLeft.value = progress.value?.getBoundingClientRect().left
-  // 获取点击未弹起时的位置
-  getIntoPosition = e.offsetX
-  window.addEventListener('mousemove', mousemoveFn)
-  window.addEventListener('mouseup', mouseUpFn);
-}
-
-// 窗口的mouseup事件
-const mouseUpFn = (e: MouseEvent) => {
-  // 开启进度条的动画效果
-  isProgressItemTransition.value = true;
-  // 移除鼠标滑动时的事件监听
-  window.removeEventListener('mousemove', mousemoveFn)
-  // 根据点击未弹起时的位置和放开时的位置作比较，判断是否有触发move，如果没有移动则是点击事件
-  // 在此重置当前歌曲的播放位置(这里e.offsetX是弹起时的位置)
-  if (getIntoPosition === e.offsetX) {
-    audio.value!.currentTime = e.offsetX / progressWidth.value * audio.value?.duration!
-  }
-  // 重新开启 audio 上的 timeupdate 事件监听
-  audio.value?.addEventListener('timeupdate', timeupdateFn)
-  // 在滑动结束时判断是否开启歌曲
-   if (isPlay.value) {
-    play()
-  }
-  // 移除鼠标弹起时的事件监听
-  window.removeEventListener('mouseup', mouseUpFn);
-};
-
-
-// 定义记录当前的喇叭icon状态
-const isVolume = ref(false)
-// 定义并获取volume dom
-const volume = ref<HTMLDivElement>()
-// 定义volume与窗口顶部的距离
-const volumeTop = ref()
-// 定义volume的自身高度
-const volumeHeight = ref()
-// 定义volume-bar(颜色柱子)的高度
-const volumeBarHeight = ref()
-// 定义audio的volume
-// const audioVolume = ref()
-// 定义布尔值决定音量柱子是否隐藏
-const isVolumeWrapHeightClass = ref(false)
-// 记录点击未弹起时的位置
-let getIntoPositionVolume: number;
-
-// 点击volume未弹起位移时触发该事件
-const volumeMousemove = (e: MouseEvent) => {
-  // 彩色柱子高度百分比：1 - （鼠标距离 - dom到浏览器窗口顶部距离）/ 柱子总长
-  let percent = 1 - (e.clientY - volumeTop.value) / volumeHeight.value
-  if (percent < 0) {
-    percent = 0
-  } else if (percent > 1) {
-    percent = 1
-  }
-  // 重置彩色柱子高度
-  volumeBarHeight.value = percent * 100
-  // 重置音量
-  audio.value!.volume = +percent.toFixed(2)
-}
-// 在点击volume后弹起时触发该事件
-const volumeMouseup = (e: MouseEvent) => {
-  // 弹起时立即移除move事件
-  window.removeEventListener('mousemove', volumeMousemove)
-  // 当鼠标不在dom上时，隐藏这个类，柱子隐藏
-  isVolumeWrapHeightClass.value = false
-  // 根据记录点击未弹起时的位置判断是否触发move事件，如果没有触发，说明是点击事件，在这里重置柱子高度和音量大小
-  if (getIntoPositionVolume === e.offsetY) {
-    // 根据鼠标在dom的位置 / 总长度来得到百分比
-    let percent = 1 - (e.offsetY / volumeHeight.value)
-    volumeBarHeight.value = percent * 100
-    audio.value!.volume = +percent.toFixed(2)
-  }
-  // 移除自身的这个mouseup事件
-  window.removeEventListener('mouseup', volumeMouseup)
-}
-// 点击volume未弹起时触发事件
-const volumeMousedown = (e: MouseEvent) => {
-  // 一旦点击dom则开启这个类，当鼠标移出dom后，dom依然不会隐藏
-  isVolumeWrapHeightClass.value = true
-  // dom的高度
-  volumeHeight.value = volume.value?.getBoundingClientRect().height
-  // dom的上边框距离浏览器窗口的顶部距离
-  volumeTop.value = volume.value?.getBoundingClientRect().top
-  // 拿到点击时的位置
-  getIntoPositionVolume = e.offsetY
-  // 注册事件监听器
-  window.addEventListener('mousemove', volumeMousemove)
-  window.addEventListener('mouseup', volumeMouseup)
-}
-// volumeIcon的点击事件
-const volumeIconClick = () => {
-  // 点击切换icon
-  isVolume.value = !isVolume.value
-  // true是关闭音量
-  if (isVolume.value) {
-    // 在关闭音量前让 oldVoiceVolume 保留原有音量
-    storage.value.oldVoiceVolume = storage.value.voiceVolume
-    volumeBarHeight.value = 0
-    audio.value!.volume = 0
-  } else {
-    // false是开启音量
-    // 开启音量时让当前音量去拿关闭前保留的音量 oldVoiceVolume
-    storage.value.voiceVolume = storage.value.oldVoiceVolume
-    volumeBarHeight.value = storage.value.voiceVolume * 100
-    audio.value!.volume = storage.value.voiceVolume
-  }
-}
-// 根据音量颜色条来判断使用哪个icon
-watch(volumeBarHeight, (newVal, oldVal) => {
-  if (newVal === 0) {
-    isVolume.value = true
-  } else {
-    isVolume.value = false
-  }
-})
-
-
-// 定义播放模式的icon类名
-const playTypeIcon = ['icon-hanhan-01-01', 'icon-24gl-shuffle', 'icon-24gl-repeat2']
-// 定义播放模式的icon类名下标
-const playType = ref(0)
-// 播放模式的点击事件，修改icon类名下标
-const playTypeClick = () => {
-  playType.value++;
-  if(playType.value > playTypeIcon.length - 1) {
-    playType.value = 0
-  }
-}
-
-// 重置当前歌曲
-const resetClick = () => {
-  load();
-  if (isPlay.value) {
-    play();
-  }
-}
-
-// 定义是否显示歌曲列表
-const isShowPlayerList = ref(false);
-// 保留下当前点击的li标签的下标
-const focusIndex = ref(0)
-let focusIndex2:number = 0;
-// li标签点击事件
-const liClick = (index: number) => {
-  // 重置audio的src
-  audio.value!.src = audioList.value[index].audioSrc
-  // 重置focusIndex
-  focusIndex.value = index
-  focusIndex2 = index
-  play()
-  if (isPlay.value === false) {
-    isPlay.value = true
-  }
-}
-// 拿到route
-const route = useRoute()
-// 当页面跳转停止播放歌曲
-watch(route, () => {
-  stop()
-})
-
-// audio.value?.buffered // 返回已缓冲的length
-// audio.value?.currentTime //属性会以秒为单位返回当前媒体元素的播放时间。设置这个属性会改变媒体元素当前播放位置。
-// audio.value?.loop // 属性是 HTML 标签 loop 属性的映射，它决定了媒体元素播放结束时是否重新开始。
-// 属性(只读).paused 告诉视频是否正在暂停
-// .volume 属性可设置媒体播放时的音量。
-// load() 方法重置媒体成初始化状态，选择一个播放源， 为载入媒体重新播放做准备。
-
 onMounted(() => {
-  // 初始化音乐链接
-  audio.value!.src = audioList.value[0].audioSrc
-  // 当音乐播放时，每隔250ms回调一次该事件
-  audio.value?.addEventListener('timeupdate', timeupdateFn)
-  // 当音乐准备好可以播放时触发该事件
-  audio.value?.addEventListener('canplay', () => {
-    // 音乐总时长
-    audioDuration.value = formatMusicTime(audio.value?.duration!)
-    // 音乐音量初始化
-    audio.value!.volume = storage.value.voiceVolume
-    // audioVolume.value = audio.value?.volume
-    // 音量柱子初始化
-    volumeBarHeight.value = audio.value!.volume * 100
-  })
-  // 当改变音量大小时触发
-  audio.value?.addEventListener('volumechange', (e: Event) => {
-    const audio = e.target as HTMLAudioElement;
-    storage.value.voiceVolume = audio.volume;
-  })
-  // 当音乐播放结束时触发
-  audio.value?.addEventListener('ended', () => {
-    // 顺序播放
-    if (playType.value === 0) {
-      if (focusIndex2 === audioList.value.length - 1) {
-        focusIndex2 = -1
-      }
-      // 重置audio的src
-      audio.value!.src = audioList.value[++focusIndex2]?.audioSrc
-      // 重置音乐播放器歌曲信息
-      focusIndex.value = focusIndex2
-    // 随机播放
-    } else if (playType.value === 1) {
-      const max = audioList.value.length - 1
-      const index = Math.floor(Math.random() * (max - 0 + 1)) + 0;
-      // 重置audio的src
-      audio.value!.src = audioList.value[index]?.audioSrc
-      // 重置音乐播放器歌曲信息
-      focusIndex.value = index
-    // 单曲循环
-    } else {
-      resetClick()
-    }
-    play()
-    isPlay.value = true
-  })
-
-  // 此位置拿不到正确的progressWidth值（暂不知为什么）
-  // progressWidth.value = progress.value?.getBoundingClientRect().width
-  // console.log(progressWidth.value);
-
-  // window.addEventListener('resize', () => {
-    // progressWidth.value = progress.value?.offsetWidth
-    // console.log(progress.value?.offsetWidth);
-  // })
 });
 
 defineExpose({
@@ -562,300 +471,14 @@ export default { name: '' };
 </script>
 
 <style lang='scss'>
-@keyframes iconRotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
 .home-content {
   display: flex;
   flex-direction: column;
   align-items: center;
 
   .home-music {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100px;
-    width: 100%;
+    width: 40%;
     margin: 20px 0;
-    .player {
-      min-height: 100px;
-      width: 33.3%;
-      // background-color: #ffffff;
-      box-shadow: 0 2px 2px 0 rgb(0 0 0 / 7%), 0 1px 5px 0 rgb(0 0 0 / 10%);
-      user-select: none;
-      .player-body {
-        display: flex;
-        height: 100px;
-        width: 100%;
-        background-color: #ffffff;
-        border-bottom: 1px solid #e9e9e9;
-        .player-left {
-          position: relative;
-          width: 100px;
-          height: 100px;
-          cursor: pointer;
-
-          &:hover .player-left-icon i {
-            opacity: 1;
-          }
-
-          img {
-            width: 100%;
-            height: 100%;
-          }
-          .player-left-icon {
-            position: absolute;
-            right: 50%;
-            bottom: 50%;
-            transform: translate(50%,50%);
-            transition: all .1s ease;
-            i {
-              font-size: 42px;
-              color: #ffffff;
-              opacity: .8;
-              transition: all .1s ease;
-            }
-          }
-          .player-left-icon-is_play {
-            position: absolute;
-            right: 0;
-            bottom: 0;
-            transform: translate(-10%,-10%);
-            transition: all .1s ease;
-            i {
-              font-size: 22px;
-            }
-          }
-        }
-        .player-right {
-          position: relative;
-          flex: 1;
-          // display: flex;
-          // flex-direction: column;
-          // justify-content: space-between;
-          padding: 10px 8px 0;
-          .title {
-            font-size: 14px;
-            color: #333;
-            span {
-              font-size: 12px;
-              color: #666;
-            }
-          }
-          .lrc {
-            height: 30px;
-            margin: 10px 0;
-          }
-          .controller {
-            display: flex;
-            align-items: center;
-            height: 18px;
-            .progress {
-              flex: 1;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 100%;
-              cursor: pointer;
-              &:hover .progress-item>.progress-item-dot>span {
-                width: 10px;
-                height: 10px;
-              }
-              .progress-item {
-                position: relative;
-                width: 100%;
-                height: 2px;
-                background: #cdcdcd;
-                &::after {
-                  position: absolute;
-                  top: 0;
-                  left: 0;
-                  content: '';
-                  width: var(--progressBuffered);
-                  height: 100%;
-                  background: linear-gradient(to right, rgb(115, 214, 180), rgb(15, 214, 230));
-                  z-index: 1;
-                  // transition: all .1s linear;
-                }
-                .progress-item-dot {
-                  position: absolute;
-                  top: 50%;
-                  left: calc(var(--progressBuffered) - 5px);
-                  transform: translateY(-50%);
-                  width: 10px;
-                  height: 10px;
-                  pointer-events: none;
-                  // transition: all .1s linear;
-                  // background-color: rgb(127, 218, 180);
-                  span {
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    width: 0;
-                    height: 0;
-                    border-radius: 50%;
-                    background-color: rgb(calc(115 - var(--dotBuffered)), 214, calc(180 + var(--dotBuffered) / 2));
-                    transition: all .3s ease-in-out;
-                  }
-                }
-                .progress-item-dot-transition {
-                  transition: all .1s linear;
-                }
-              }
-              .progress-item-transition {
-                &::after {
-                  transition: all .1s linear;
-                }
-              }
-            }
-            .time {
-              display: flex;
-              align-items: center;
-              height: 100%;
-              padding-left: 8px;
-              span {
-                font-size: 11px;
-                color: #999;
-              }
-              .volume, .play-type, .reset, .play-lists {
-                width: 15px;
-                height: 15px;
-                line-height: 15px;
-                text-align: center;
-                margin: 0 2px;
-                i {
-                  font-size: 15px;
-                  color: #666;
-                  &:hover {
-                    color: #000;
-                  }
-                }
-              }
-              .volume {
-                position: relative;
-                margin-left: 8px;
-                &:hover .volume-wrap {
-                  height: 45px;
-                }
-                .volume-wrap {
-                  position: absolute;
-                  bottom: 15px;
-                  right: -3px;
-                  width: 25px;
-                  height: 0;
-                  z-index: 99;
-                  overflow: hidden;
-                  transition: all .2s ease-in-out;
-                  .volume-wrap-bar {
-                    position: absolute;
-                    bottom: 0;
-                    right: 10px;
-                    width: 5px;
-                    height: 40px;
-                    background: #cdcdcd;
-                    border-radius: 2.5px;
-                    overflow: hidden;
-                    .volume-wrap-bar-inner {
-                      position: absolute;
-                      bottom: 0;
-                      right: 0;
-                      width: 5px;
-                      background: rgb(127, 218, 180);
-                      pointer-events: none;
-                      transition: all .1s ease;
-                    }
-                  }
-                }
-                .volume-wrap-height {
-                  height: 45px;
-                }
-              }
-            }
-          }
-          .right-top-icon {
-            position: absolute;
-            top: 10px;
-            right: 8px;
-            width: 22px;
-            height: 22px;
-            line-height: 22px;
-            text-align: center;
-            i {
-              font-size: 22px;
-              color: rgb(calc(115 - var(--dotBuffered)), 214, calc(180 + var(--dotBuffered) / 2));
-            }
-          }
-          .right-top-icon-rotate {
-            animation: iconRotate 2s linear infinite;
-          }
-        }
-      }
-      .player-list {
-        width: 100%;
-        max-height: 0;
-        overflow-y: auto;
-        transition: all .5s ease;
-        ol {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          width: 100%;
-          background-color: #ffffff;
-          li {
-            position: relative;
-            width: 100%;
-            line-height: 32px;
-            font-size: 12px;
-            border-top: 1px solid #e9e9e9;
-            padding: 0 15px;
-            cursor: pointer;
-            transition: all .2s ease;
-            &:hover {
-              background-color: #efefef;
-            }
-            &:first-child {
-              border-top: none;
-            }
-
-            .list-cur {
-              position: absolute;
-              left: 0;
-              top: 5px;
-              display: block;
-              width: 3px;
-              height: 22px;
-              background-color: transparent;
-            }
-            .list-index {
-              color: #666;
-              margin-right: 12px;
-            }
-            .list-title {
-              color: #333;
-            }
-            .list-author {
-              float: right;
-              color: #666;
-            }
-          }
-          .li-focus {
-            background-color: #e9e9e9;
-            .list-cur {
-              background-color: rgb(127, 218, 180);
-            }
-          }
-        }
-      }
-      .player-list-show {
-        max-height: 220px;
-      }
-    }
   }
   .home-content-center {
     width: 82%;
