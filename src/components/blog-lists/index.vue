@@ -129,8 +129,9 @@ export default { name: '' };
         // box-shadow: 0 1px 0 2px rgba($color: #ddd, $alpha: .5);
       // }
       &:hover .background-shadow {
-        width: 101%;
-        top: 54%;
+        width: calc(100% + 4px);
+        // top: 54%;
+        transform: translate(-50%, 8px);
         background: rgba($color: #555, $alpha: .2 );
       }
       &:hover .lists-item-left::after{
@@ -149,9 +150,10 @@ export default { name: '' };
       }
       .background-shadow {
         position: absolute;
-        top: 52%;
+        // top: 52%;
+        top: 0;
         left: 50%;
-        transform: translate(-50%,-50%);
+        transform: translate(-50%, 4px);
         content: '';
         width: 100%;
         height: 100%;
