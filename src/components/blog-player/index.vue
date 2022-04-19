@@ -69,26 +69,38 @@
 
 <script lang='ts' setup>
 import '@/assets/svg/home-svg/fonticon/iconfont.css';
-import { reactive, ref, onMounted, onUnmounted, computed, onUpdated, watch, defineProps } from 'vue';
+import { reactive, ref, onMounted, onUnmounted, computed, onUpdated, watch, defineProps, PropType } from 'vue';
 import { storage } from '@/helpers/storage';
 import { useRoute } from 'vue-router';
 
 // const props = defineProps({
 //   audioList: {
-//     type: any[],
+//     type: Array as PropType<any[]>,
 //   }
 // })
+interface AudioType {
+  audioSrc: any;
+  title: string;
+  author: string;
+  imgSrc: any;
+  lrc: {
+      time: string;
+      text: string;
+  }[];
+}
 
-// interface Props {
-//   audioList: [],
-// }
-// const props = withDefaults(defineProps<Props>(), {
-//   audioList: () => { return [] },
-// })
+// type AudioType = Record<string, any>
 
-const props = defineProps<{
-  audioList: any[]
-}>()
+interface Props {
+  audioList: AudioType[],
+}
+const props = withDefaults(defineProps<Props>(), {
+  audioList: () => { return [] as AudioType[] },
+})
+
+// const props = defineProps<{
+//   audioList: any[]
+// }>()
 
 // 格式化歌曲时长
 const formatMusicTime = (val: number) => {
@@ -164,7 +176,7 @@ const timeupdateFn = () => {
   // 获取歌词所有的p标签
   const lrcPAll = lrc.value?.querySelectorAll('p')
   // 获取当前p标签的下标
-  pIndex.value = props.audioList[focusIndex2].lrc.filter((item: any) => item.time <= audioCurrentTime.value).length - 1
+  pIndex.value = props.audioList[focusIndex2].lrc.filter((item) => item.time <= audioCurrentTime.value).length - 1
   // 根据p标签的下标获取该p标签距离父级顶部的距离，这段距离就是要位移的距离
   lrcPosition.value = lrcPAll![pIndex.value]?.offsetTop
   
