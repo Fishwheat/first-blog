@@ -72,25 +72,27 @@ import '@/assets/svg/home-svg/fonticon/iconfont.css';
 import { reactive, ref, onMounted, onUnmounted, computed, onUpdated, watch, defineProps, PropType } from 'vue';
 import { storage } from '@/helpers/storage';
 import { useRoute } from 'vue-router';
-
+// 普通方式定义
 // const props = defineProps({
 //   audioList: {
 //     type: Array as PropType<any[]>,
 //   }
 // })
+
+// ts独有方式定义（含默认值）
+interface lrcType {
+  time: string,
+  text: string,
+}
 interface AudioType {
   audioSrc: any;
   title: string;
   author: string;
   imgSrc: any;
-  lrc: {
-      time: string;
-      text: string;
-  }[];
+  lrc: lrcType[];
 }
-
+// 上面的方式定义规则性强； 下面的定义方式规则性弱，类型是any。
 // type AudioType = Record<string, any>
-
 interface Props {
   audioList: AudioType[],
 }
@@ -98,6 +100,7 @@ const props = withDefaults(defineProps<Props>(), {
   audioList: () => { return [] as AudioType[] },
 })
 
+// ts独有方式定义（不含默认值）
 // const props = defineProps<{
 //   audioList: any[]
 // }>()
