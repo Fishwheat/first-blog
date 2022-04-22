@@ -10,7 +10,7 @@ import {reactive, ref, onBeforeMount, onMounted} from 'vue';
 
 
 onMounted(() => {
-  console.log('3.-组件挂载到页面之后执行-------onMounted');
+  // console.log('3.-组件挂载到页面之后执行-------onMounted');
 });
 defineExpose({
 });
@@ -29,6 +29,7 @@ export default { name: 'BlogPanel' };
   padding: 20px;
   background-color: #fff;
   border-radius: 6px;
+  // overflow: hidden;
   &:hover .background-shadow {
     width: calc(100% + 2px);
     // top: 53%;

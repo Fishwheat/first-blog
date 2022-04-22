@@ -10,6 +10,7 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 import ApiClient from './apis/api-client';
+import VueI18n from './language';
 
 ApiClient.setInstance(axios.create({
   baseURL: '/api',
@@ -17,5 +18,5 @@ ApiClient.setInstance(axios.create({
 
 const app = createApp(App);
 app.use(ElementPlus, { locale: zhCn });
-app.use(store).use(router).mount('#app');
+app.use(store).use(router).use(VueI18n).mount('#app');
 // app.use(ElementPlus, { locale });

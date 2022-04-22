@@ -6,8 +6,10 @@
     <div class="home-content-center">
       <div class="aside">
         <!-- <aside> -->
-          <div style="height: 100px; margin-bottom: 20px">
-            <BlogPanel>未开发</BlogPanel>
+          <div class="aside-recommend">
+            <BlogPanel>
+              <HomeContentAsideRecommend />
+            </BlogPanel>
           </div>
           <div style="height: 300px; margin-bottom: 20px">
             <BlogPanel>未开发</BlogPanel>
@@ -33,6 +35,7 @@ import { reactive, ref, onMounted, onUnmounted, computed, onUpdated, watch } fro
 import BlogLists from '@/components/blog-lists/index.vue';
 import BlogPlayer from '@/components/blog-player/index.vue';
 import BlogPanel from '@/components/blog-panel/index.vue';
+import HomeContentAsideRecommend from './home-content-aside-recommend.vue';
 
 // 引入音乐
 const unstoppableMusic  = require('@/assets/audio/Sia-Unstoppable.mp3?raw');
@@ -501,6 +504,10 @@ export default { name: '' };
     .aside {
       width: 30%;
       margin-right: 20px;
+      .aside-recommend {
+        min-height: 300px;
+        margin-bottom: 20px;
+      }
     }
     .learning-records {
       flex: 1;

@@ -6,6 +6,55 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "16399020",
+      "name": "语言",
+      "font_class": "yuyan",
+      "unicode": "e85f",
+      "unicode_decimal": 59487
+    },
+    {
+      "icon_id": "20885024",
+      "name": "切换语言",
+      "font_class": "qiehuanyuyan",
+      "unicode": "e769",
+      "unicode_decimal": 59241
+    },
+    {
+      "icon_id": "20647584",
+      "name": "icon_bilibili-circle",
+      "font_class": "icon_bilibili-circle",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "4546594",
+      "name": "githubb",
+      "font_class": "githubb",
+      "unicode": "e63b",
+      "unicode_decimal": 58939
+    },
+    {
+      "icon_id": "4937004",
+      "name": "QQ-circle-fill",
+      "font_class": "QQ-circle-fill",
+      "unicode": "e887",
+      "unicode_decimal": 59527
+    },
+    {
+      "icon_id": "6008340",
+      "name": "邮箱&面性",
+      "font_class": "youxiang_",
+      "unicode": "e633",
+      "unicode_decimal": 58931
+    },
+    {
+      "icon_id": "26267572",
+      "name": "gitee",
+      "font_class": "gitee",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    },
+    {
       "icon_id": "18211626",
       "name": "重置",
       "font_class": "zhongzhi2",

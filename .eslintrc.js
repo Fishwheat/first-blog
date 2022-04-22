@@ -18,6 +18,7 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 0,
     'import/prefer-default-export': 0,
     'no-param-reassign': 0,
-    '@typescript-eslint/ban-ts-comment': 0
+    '@typescript-eslint/ban-ts-comment': 0,
+    'global-require':0, // 解决 'en-us': require('./en-us'), 的警告
   },
 };

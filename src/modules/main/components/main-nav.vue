@@ -33,6 +33,12 @@
           <!-- <a href="/friendly-link"></a> -->
         <!-- </div> -->
       </div>
+      <div class="language" @click="languageClick">
+        <div class="language-icon">
+          <i class="iconfont icon-yuyan"></i>
+        </div>
+        <div class="language-text">{{ isZhCn ? 'English' : '中文简体' }}</div>
+      </div>
     </nav>
   </div>
 </template>
@@ -42,6 +48,7 @@ import '@/assets/svg/home-svg/fonticon/iconfont.css';
 import {reactive, ref, computed, onBeforeMount, onMounted, onUnmounted, watch, onUpdated} from 'vue';
 import RoutesEnum from '@/enums/routes.enums';
 import { useRoute, useRouter } from 'vue-router';
+import { storage } from '@/helpers/storage';
 
 const props = defineProps({
   isHome: {
@@ -84,7 +91,18 @@ const routerPageClick = (name: any) => {
 // const isHome = computed(() => {
 //   return routePage.value === RoutesEnum.HOME;
 // })
-
+const languageClick = () => {
+  // window.location.reload();
+  window.location.href = window.location.href
+  if (isZhCn.value) {
+    storage.value.languageType = 'en-us'
+  } else {
+    storage.value.languageType = 'zh-cn'
+  }
+}
+const isZhCn = computed(() => {
+  return storage.value.languageType === 'zh-cn'
+})
 onMounted(() => {
   // routePage.value = route.meta.page
   navHeight.value = nav.value.offsetHeight
@@ -117,6 +135,7 @@ export default { name: 'MainNav' };
   width: 100%;
   // overflow: hidden;
   .header-nav {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -171,7 +190,7 @@ export default { name: 'MainNav' };
       height: 100%;
       display: flex;
       align-items: center;
-      margin-right: 40px;
+      margin-right: 136px;
       .menu-item {
         width: 72px;
         display: flex;
@@ -188,6 +207,39 @@ export default { name: 'MainNav' };
       }
       .menu-item:hover i{
         animation: iconJump .5s ease-in;
+      }
+    }
+    .language {
+      position: absolute;
+      right: 20px;
+      display: flex;
+      // justify-content: center;
+      align-items: center;
+      width: 100px;
+      height: 34px;
+      color: #fff;
+      background: rgba($color: #06c6bc, $alpha: .6);
+      border-radius: 8px;
+      user-select: none;
+      cursor: pointer;
+      &:active {
+        background: rgba($color: #06c6bc, $alpha: .8);
+      }
+      .language-icon {
+        height: 14px;
+        // width: 14px;
+        line-height: 14px;
+        text-align: center;
+        padding: 0 8px;
+        border-right: 1px solid #ffffff;
+        i {
+         font-size: 14px;
+        }
+      }
+      .language-text {
+        font-size: 13px;
+        margin-left: 8px;
+        // font-weight: 600;
       }
     }
   }
@@ -213,6 +265,9 @@ export default { name: 'MainNav' };
           font-weight: bold;
         }
       }
+    }
+    .language {
+      background: rgba($color: #06c6bc, $alpha: 1);
     }
   }
 }
