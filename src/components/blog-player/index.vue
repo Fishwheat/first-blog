@@ -125,7 +125,13 @@ const audioDuration = ref()
 
 // 播放歌曲fn()
 const play = () => {
-  audio.value?.play()
+  // 当进度条被拉至最末尾时执行
+  if (audioCurrentTime.value === audioDuration.value) {
+    endedFn()
+  } else {
+    // 正常情况下执行
+    audio.value?.play()
+  }
 }
 
 // 暂停歌曲fn()
@@ -191,8 +197,38 @@ const timeupdateFn = () => {
   }
 }
 
+// 定义当音乐结束时触发的事件
+const endedFn = () => {
+  // 顺序播放
+  if (playType.value === 0) {
+    if (focusIndex2 === props.audioList.length - 1) {
+      focusIndex2 = -1
+    }
+    // 重置audio的src
+    audio.value!.src = props.audioList[++focusIndex2]?.audioSrc
+    // 重置音乐播放器歌曲信息
+    focusIndex.value = focusIndex2
+  // 随机播放
+  } else if (playType.value === 1) {
+    const max = props.audioList.length - 1
+    const index = Math.floor(Math.random() * (max - 0 + 1)) + 0;
+    // 重置audio的src
+    audio.value!.src = props.audioList[index]?.audioSrc
+    // 重置音乐播放器歌曲信息
+    focusIndex2 = index
+    focusIndex.value = index
+  // 单曲循环
+  } else {
+    load()
+  }
+  audio.value?.play()
+  isPlay.value = true
+}
+
 // 鼠标点击后滑动触发的事件
 const mousemoveFn = (e: MouseEvent) => {
+  // 在滑动过程中取消这个事件，避免当当前音乐在播放，而拖到最末尾时立即播放下一首歌
+  audio.value?.removeEventListener('ended', endedFn)
   // 在滑动过程中暂停歌曲
   stop()
   // 关闭进度条的动画效果
@@ -229,6 +265,8 @@ const progressMousedown = (e: MouseEvent) => {
 
 // 窗口的mouseup事件
 const mouseUpFn = (e: MouseEvent) => {
+  // 在鼠标弹起后继续监听该事件
+  audio.value?.addEventListener('ended', endedFn)
   // 开启进度条的动画效果
   isProgressItemTransition.value = true;
   // 移除鼠标滑动时的事件监听
@@ -278,7 +316,10 @@ const volumeMousemove = (e: MouseEvent) => {
   // 重置彩色柱子高度
   volumeBarHeight.value = percent * 100
   // 重置音量
-  audio.value!.volume = +percent.toFixed(2)
+  // audio.value!.volume = +percent.toFixed(2)
+  if (audio.value) {
+    audio.value.volume = +percent.toFixed(2)
+  }
 }
 // 在点击volume后弹起时触发该事件
 const volumeMouseup = (e: MouseEvent) => {
@@ -291,7 +332,10 @@ const volumeMouseup = (e: MouseEvent) => {
     // 根据鼠标在dom的位置 / 总长度来得到百分比
     let percent = 1 - (e.offsetY / volumeHeight.value)
     volumeBarHeight.value = percent * 100
-    audio.value!.volume = +percent.toFixed(2)
+    // audio.value!.volume = +percent.toFixed(2)
+    if (audio.value) {
+      audio.value.volume = +percent.toFixed(2)
+    }
   }
   // 移除自身的这个mouseup事件
   window.removeEventListener('mouseup', volumeMouseup)
@@ -399,7 +443,10 @@ onMounted(() => {
     // 音乐总时长
     audioDuration.value = formatMusicTime(audio.value?.duration!)
     // 音乐音量初始化
-    audio.value!.volume = storage.value.voiceVolume
+    // audio.value!.volume = storage.value.voiceVolume
+    if (audio.value) {
+      audio.value.volume = storage.value.voiceVolume
+    }
     // audioVolume.value = audio.value?.volume
     // 音量柱子初始化
     volumeBarHeight.value = audio.value!.volume * 100
@@ -409,32 +456,35 @@ onMounted(() => {
     const audio = e.target as HTMLAudioElement;
     storage.value.voiceVolume = audio.volume;
   })
+
   // 当音乐播放结束时触发
-  audio.value?.addEventListener('ended', () => {
-    // 顺序播放
-    if (playType.value === 0) {
-      if (focusIndex2 === props.audioList.length - 1) {
-        focusIndex2 = -1
-      }
-      // 重置audio的src
-      audio.value!.src = props.audioList[++focusIndex2]?.audioSrc
-      // 重置音乐播放器歌曲信息
-      focusIndex.value = focusIndex2
-    // 随机播放
-    } else if (playType.value === 1) {
-      const max = props.audioList.length - 1
-      const index = Math.floor(Math.random() * (max - 0 + 1)) + 0;
-      // 重置audio的src
-      audio.value!.src = props.audioList[index]?.audioSrc
-      // 重置音乐播放器歌曲信息
-      focusIndex.value = index
-    // 单曲循环
-    } else {
-      resetClick()
-    }
-    play()
-    isPlay.value = true
-  })
+  audio.value?.addEventListener('ended', endedFn)
+  // 当音乐播放结束时触发（该函数已提到上面的endedFn中）
+  // audio.value?.addEventListener('ended', () => {
+  //   // 顺序播放
+  //   if (playType.value === 0) {
+  //     if (focusIndex2 === props.audioList.length - 1) {
+  //       focusIndex2 = -1
+  //     }
+  //     // 重置audio的src
+  //     audio.value!.src = props.audioList[++focusIndex2]?.audioSrc
+  //     // 重置音乐播放器歌曲信息
+  //     focusIndex.value = focusIndex2
+  //   // 随机播放
+  //   } else if (playType.value === 1) {
+  //     const max = props.audioList.length - 1
+  //     const index = Math.floor(Math.random() * (max - 0 + 1)) + 0;
+  //     // 重置audio的src
+  //     audio.value!.src = props.audioList[index]?.audioSrc
+  //     // 重置音乐播放器歌曲信息
+  //     focusIndex.value = index
+  //   // 单曲循环
+  //   } else {
+  //     resetClick()
+  //   }
+  //   play()
+  //   isPlay.value = true
+  // })
 
   // 此位置拿不到正确的progressWidth值（暂不知为什么）
   // progressWidth.value = progress.value?.getBoundingClientRect().width

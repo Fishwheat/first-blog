@@ -3,7 +3,9 @@ import { storage } from '@/helpers/storage';
 
 // interface Type { voiceVolume: number; oldVoiceVolume: number; languageType: string; }
 const i18n = createI18n({
-  locale: (storage as any).value.languageType,
+  // locale: (storage as any).value.languageType,
+  legacy: false,
+  locale: storage.value.languageType ?? 'zh-cn',
   messages: {
     'zh-cn': require('./zh-cn'),
     'en-us': require('./en-us'),

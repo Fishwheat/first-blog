@@ -49,6 +49,9 @@ import {reactive, ref, computed, onBeforeMount, onMounted, onUnmounted, watch, o
 import RoutesEnum from '@/enums/routes.enums';
 import { useRoute, useRouter } from 'vue-router';
 import { storage } from '@/helpers/storage';
+import { useI18n } from 'vue-i18n';
+
+const i18n = useI18n();
 
 const props = defineProps({
   isHome: {
@@ -93,12 +96,13 @@ const routerPageClick = (name: any) => {
 // })
 const languageClick = () => {
   // window.location.reload();
-  window.location.href = window.location.href
+  // window.location.href = window.location.href
   if (isZhCn.value) {
     storage.value.languageType = 'en-us'
   } else {
     storage.value.languageType = 'zh-cn'
   }
+  i18n.locale.value = storage.value.languageType
 }
 const isZhCn = computed(() => {
   return storage.value.languageType === 'zh-cn'
