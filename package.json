@@ -5,11 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve --port=8888",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "generate-api": "kohapi-generator yapi-client-ts && vue-cli-service lint ./src/apis"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@kohapi/generator": "^0.0.1-alpha.11",
     "@vueuse/core": "^8.2.3",
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
