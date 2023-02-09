@@ -8,3 +8,32 @@
 :root {
   --el-color-primary: red;
 }
+@import url('./width375/index.scss') (min-width: 375px);
+@import url('./width750/index.scss') (min-width: 750px);
+@import url('./width920/index.scss') (min-width: 920px);
+@import url('./width1200/index.scss') (min-width: 1200px);
+
+// @media all and (min-width: 375px) {
+//   .home-content {
+//     background-color: skyblue !important;
+//   }
+//   @import url('./width375.scss');
+// }
+// @media all and (min-width: 750px) {
+//   .home-content {
+//     background-color: pink !important;
+//   }
+//   @import url('./width750.scss');
+// }
+// @media all and (min-width: 920px) {
+//   .home-content {
+//     background-color: gray !important;
+//   }
+//   @import url('./width920.scss');
+// }
+// @media all and (min-width: 1200px) {
+//   .home-content {
+//     background-color: orange !important;
+//   }
+//   @import url('./width1200.scss');
+// }
